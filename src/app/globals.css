@@ -125,5 +125,286 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
+}
+
+/* ─── 梦幻动画 ─── */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.03); }
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(10px, -15px); }
+  50% { transform: translate(-5px, -25px); }
+  75% { transform: translate(-15px, -10px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; filter: blur(60px); }
+  50% { opacity: 0.7; filter: blur(80px); }
+}
+
+@keyframes particle {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) scale(0); opacity: 0; }
+}
+
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(30px) scale(0.8); filter: blur(4px); }
+  60% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes river-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes bubble-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px 4px rgba(139, 92, 246, 0.1); }
+}
+
+/* ─── 黑猫动画 ─── */
+
+@keyframes cat-idle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes cat-purr {
+  0%, 100% { transform: translateY(0px) scaleX(1); }
+  30% { transform: translateY(-4px) scaleX(1.01); }
+  70% { transform: translateY(-2px) scaleX(0.99); }
+}
+
+@keyframes eye-glow {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(245,158,11,0.6)); }
+  50% { filter: drop-shadow(0 0 10px rgba(245,158,11,0.9)) drop-shadow(0 0 20px rgba(245,158,11,0.4)); }
+}
+
+@keyframes bubble-rise {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.75); }
+  15%  { opacity: 1; transform: translateY(12px) scale(1); }
+  80%  { opacity: 0.9; transform: translateY(-20px) scale(1); }
+  100% { opacity: 0; transform: translateY(-36px) scale(0.9); }
+}
+
+/* 气泡弹入动画：scale弹性 + 模糊消散 */
+@keyframes bubble-pop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(14px); filter: blur(5px); }
+  55%  { opacity: 1; transform: scale(1.1) translateY(-3px);  filter: blur(0); }
+  75%  { transform: scale(0.96) translateY(1px); }
+  100% { opacity: 1; transform: scale(1)   translateY(0);    filter: blur(0); }
+}
+
+/* 气泡出现后持续悬浮（上下漂移） */
+@keyframes bubble-hover-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-7px); }
+}
+
+/* 气泡边框光晕呼吸 */
+@keyframes bubble-glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(139,92,246,0.1),  inset 0 0 0 1px rgba(139,92,246,0.2); }
+  50%       { box-shadow: 0 0 12px rgba(139,92,246,0.35), inset 0 0 0 1px rgba(139,92,246,0.5); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.3); }
+}
+
+@keyframes typing-dot {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+.animate-cat-idle  { animation: cat-idle 2.8s ease-in-out infinite; }
+.animate-cat-purr  { animation: cat-purr 1.4s ease-in-out infinite; }
+.animate-eye-glow  { animation: eye-glow 2s ease-in-out infinite; }
+.animate-bubble-rise { animation: bubble-rise 3.5s ease-in-out both; }
+.animate-star-twinkle { animation: star-twinkle 2.5s ease-in-out infinite; }
+
+/* 气泡悬浮包裹层（唯一负责 Y 轴漂移，不与内部 transform 冲突） */
+.bubble-float-wrap {
+  display: inline-block;
+  animation: bubble-hover-float var(--float-dur, 2.6s) ease-in-out var(--float-delay, 0s) infinite;
+}
+
+/* 像素风对话气泡 */
+.dream-bubble {
+  display: inline-block;
+  background: rgba(109, 40, 217, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: #c4b5fd;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  image-rendering: pixelated;
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.45);
+  animation: bubble-glow-pulse 3s ease-in-out infinite;
+}
+
+/* 像素边框 (2px solid pixel style) */
+.pixel-border {
+  border: 2px solid rgba(109, 40, 217, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.08);
+}
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-drift { animation: drift 8s ease-in-out infinite; }
+.animate-fade-in-up { animation: fade-in-up 0.8s ease-out both; }
+.animate-fade-in { animation: fade-in 0.6s ease-out both; }
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+.animate-glow-pulse { animation: glow-pulse 4s ease-in-out infinite; }
+
+/* 交错动画延迟 */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-1000 { animation-delay: 1s; }
+
+/* 玻璃质感卡片 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 白天玻璃卡片（录梦页用） */
+.glass-day {
+  background: rgba(255, 240, 245, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 200, 220, 0.4);
+}
+
+/* 夜晚玻璃卡片（入梦页用） */
+.glass-night {
+  background: rgba(40, 10, 80, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(180, 120, 255, 0.2);
+}
+
+/* 底部导航统一样式 */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 0.75rem 0;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  font-size: 0.75rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* 白天导航（录梦页/换梦页） */
+.bottom-nav-day {
+  background: rgba(255, 245, 250, 0.75);
+  border-top: 1px solid rgba(255, 180, 200, 0.3);
+}
+
+/* 夜间导航（入梦页） */
+.bottom-nav-night {
+  background: rgba(20, 5, 40, 0.75);
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* 默认（换梦页） */
+.bottom-nav:not(.bottom-nav-day):not(.bottom-nav-night) {
+  background: rgba(7, 7, 15, 0.75);
+  border-top: 1px solid rgba(109, 40, 217, 0.15);
+}
+
+.bottom-nav a, .bottom-nav button, .bottom-nav span {
+  color: #8b8baa;
+  transition: color 0.3s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+.bottom-nav a:hover, .bottom-nav button:hover {
+  color: #c4b5fd;
+  transform: translateY(-1px);
+}
+.bottom-nav .active {
+  color: #a78bfa;
+  font-weight: 600;
+}
+.bottom-nav-day a, .bottom-nav-day button, .bottom-nav-day span {
+  color: #b0748a;
+}
+.bottom-nav-day a:hover, .bottom-nav-day button:hover {
+  color: #6d28d9;
+  transform: translateY(-1px);
+}
+.bottom-nav-day .active {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+/* 移动端安全区域 */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* 移动端触摸反馈 */
+@media (hover: none) {
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* 隐藏滚动条但保持功能 */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

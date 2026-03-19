@@ -1,0 +1,101 @@
+// 无尽之梦 — Prisma Schema (SQLite)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── 用户 ───────────────────────────────────────
+model User {
+  id              String   @id @default(cuid())
+  secondMeUserId  String   @unique          // Second Me OAuth userId
+  name            String
+  avatar          String?
+  bio             String?
+  accessToken     String                     // 加密存储
+  refreshToken    String                     // 加密存储
+  tokenExpiresAt  DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  dreams          Dream[]
+  eveningDreams   EveningDream[]
+  conversationsA  AgentConversation[] @relation("AgentA")
+  conversationsB  AgentConversation[] @relation("AgentB")
+}
+
+// ─── 梦境（用户梦 + 幽灵梦共用） ─────────────────
+model Dream {
+  id          String   @id @default(cuid())
+  userId      String?                       // null = 幽灵梦境
+  content     String                        // 梦境正文
+  contentShort String?                      // 碎片预览（1-2句）
+  mood        String?                       // 情绪基调：诗意/惊悚/温柔/荒诞/混合/忧伤
+  isAnonymous Boolean  @default(false)
+  isGhost     Boolean  @default(false)      // 幽灵梦境标记
+  safetyLevel String   @default("safe")     // safe/mild/needs_review
+  date        DateTime @default(now())      // 梦的日期
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User?    @relation(fields: [userId], references: [id])
+  segments    Segment[]
+
+  @@index([isGhost])
+  @@index([userId, date])
+}
+
+// ─── Agent 对话记录 ──────────────────────────────
+model AgentConversation {
+  id              String   @id @default(cuid())
+  agentAUserId    String                    // Agent A 的主人
+  agentBUserId    String?                   // Agent B 的主人（null = 幽灵对话）
+  ghostDreamId    String?                   // 如果是幽灵对话，关联哪条幽灵梦境
+  rounds          Int      @default(0)      // 对话轮数
+  fullContent     String   @default("")     // 完整对话内容（用户不可直接看到）
+  fragments       String   @default("[]")   // JSON: 碎片化关键词（用户窥探时看到的）
+  dreamMixResult  String?                   // 梦境混合后的结果文本
+  emotionTone     String?                   // 混合后的情感基调
+  status          String   @default("pending") // pending/in_progress/completed/failed
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  agentA          User     @relation("AgentA", fields: [agentAUserId], references: [id])
+  agentB          User?    @relation("AgentB", fields: [agentBUserId], references: [id])
+
+  @@index([status])
+  @@index([agentAUserId])
+}
+
+// ─── 夜间召回梦境 ────────────────────────────────
+model EveningDream {
+  id        String    @id @default(cuid())
+  userId    String                          // 接收者
+  story     String                          // 变形后的完整梦境故事
+  audioUrl  String?                         // TTS 生成的音频 URL
+  date      DateTime  @default(now())       // 哪天的夜间梦境
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  segments  Segment[]
+
+  @@index([userId, date])
+}
+
+// ─── 梦境故事片段（可追溯来源） ──────────────────
+model Segment {
+  id              String  @id @default(cuid())
+  eveningDreamId  String
+  content         String                    // 片段内容
+  originDreamId   String?                   // 来自哪个原始梦境
+  originUserId    String?                   // 来自谁
+  isAnonymous     Boolean @default(false)   // 原梦主人是否匿名
+  position        Int     @default(0)       // 片段在故事中的位置
+
+  eveningDream    EveningDream @relation(fields: [eveningDreamId], references: [id])
+  originDream     Dream?       @relation(fields: [originDreamId], references: [id])
+}
