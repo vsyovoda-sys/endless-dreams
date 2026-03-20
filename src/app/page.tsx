@@ -129,7 +129,7 @@ export default async function Home({
           >
             体验模式（无需登录）
           </Link>
-          <p className="text-xs" style={{ color: "#b08ac0" }}>你的 AI 分身将成为梦的使者</p>
+          <p className="text-xs" style={{ color: "#b08ac0" }}>把今天做的梦告诉我，我去交换一个故事</p>
           {errorMsg && (
             <p className="text-xs mt-1" style={{ color: "#e05a8a" }}>{errorMsg}</p>
           )}
@@ -138,7 +138,7 @@ export default async function Home({
 
       <footer className="relative z-10 mt-16 pb-safe pb-6 text-xs animate-fade-in delay-1000"
         style={{ color: "#b08ac0" }}>
-        无数段梦，正在等待听众
+        这里有一些无人认领的梦，它们在等一个听众。
       </footer>
     </main>
   );

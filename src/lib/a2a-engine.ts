@@ -6,7 +6,7 @@
 
 import { prisma } from "./prisma";
 import { chatWithAgent, actWithAgent, generateTTS } from "./secondme";
-import { ghostReply, transformDream, geminiGenerate } from "./gemini";
+import { ghostReply, transformDream, geminiGenerate, synthesizeEveningStory } from "./gemini";
 
 // ─── 类型定义 ─────────────────────────────────────
 
@@ -343,16 +343,25 @@ export async function synthesizeEveningDream(userId: string): Promise<string | n
 
   if (conversations.length === 0) return null;
 
-  // 收集所有梦境混合结果（优先 dreamMixResult，fallback 到 fullContent 或 fragments）
-  const mixedDreams = conversations
-    .map((c) => c.dreamMixResult || c.fullContent || JSON.parse(c.fragments || '[]').join('、'))
+  // 获取用户今天的原始梦境（作为故事骨架）
+  const userOriginalDream = await prisma.dream.findFirst({
+    where: { userId, isGhost: false, date: { gte: today } },
+    orderBy: { createdAt: "asc" }, // 取最早的那个
+    select: { content: true },
+  });
+
+  // 收集所有交换来的异梦碎片（dreamMixResult 或 fragments）
+  const exchangedElements = conversations
+    .map((c) => c.dreamMixResult || JSON.parse(c.fragments || '[]').join('、'))
     .filter(Boolean)
-    .join("\n\n---\n\n");
+    .join("\n\n");
 
-  if (!mixedDreams) return null;
+  if (!exchangedElements && !userOriginalDream) return null;
 
-  // 用 Gemini 将混合梦境变形为最终故事
-  const story = await transformDream(mixedDreams);
+  // 用新的续写函数合成故事
+  const story = userOriginalDream
+    ? await synthesizeEveningStory(userOriginalDream.content, exchangedElements || "没有更多")
+    : await transformDream(exchangedElements);
 
   // 创建 EveningDream
   const eveningDream = await prisma.eveningDream.create({

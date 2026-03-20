@@ -112,9 +112,9 @@ export default function DreamPage() {
           </div>
         </div>
         <nav className="bottom-nav bottom-nav-day">
-          <span className="active">录梦</span>
-          <button onClick={() => router.push("/peek")}>换梦</button>
-          <button onClick={() => router.push("/evening")}>入梦</button>
+          <span className="active">🌙 录梦</span>
+          <button onClick={() => router.push("/peek")}>🐾 换梦</button>
+          <button onClick={() => router.push("/evening")}>✨ 入梦</button>
         </nav>
       </main>
     );
@@ -208,9 +208,9 @@ export default function DreamPage() {
       </div>
 
       <nav className="bottom-nav bottom-nav-day">
-        <span className="active">录梦</span>
-        <button onClick={() => router.push("/peek")}>换梦</button>
-        <button onClick={() => router.push("/evening")}>入梦</button>
+        <span className="active">🌙 录梦</span>
+        <button onClick={() => router.push("/peek")}>🐾 换梦</button>
+        <button onClick={() => router.push("/evening")}>✨ 入梦</button>
       </nav>
     </main>
   );

@@ -391,9 +391,9 @@ export default function EveningPage() {
 
       {/* 底部导航 */}
       <nav className="bottom-nav bottom-nav-night">
-        <button onClick={() => router.push("/dream")}>录梦</button>
-        <button onClick={() => router.push("/peek")}>换梦</button>
-        <span className="active" style={{ color: "#FFD700" }}>入梦</span>
+        <button onClick={() => router.push("/dream")}>🌙 录梦</button>
+        <button onClick={() => router.push("/peek")}>🐾 换梦</button>
+        <span className="active" style={{ color: "#FFD700" }}>✨ 入梦</span>
       </nav>
     </main>
   );
