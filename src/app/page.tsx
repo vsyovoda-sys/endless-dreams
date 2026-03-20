@@ -66,12 +66,12 @@ export default async function Home({
             filter: "drop-shadow(0 2px 12px rgba(168,85,247,0.25))",
           }}
         >
-          破梦
+          无尽之梦
         </h1>
 
         <p className="mt-3 text-[11px] tracking-[0.4em] uppercase animate-fade-in delay-200"
           style={{ color: "#b08ac0" }}>
-          DreamBreak
+          Endless Dreams
         </p>
 
         {/* 猫咪入场 */}
