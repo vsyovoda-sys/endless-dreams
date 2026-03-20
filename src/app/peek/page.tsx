@@ -37,6 +37,9 @@ export default function PeekPage() {
   const [emotionTone, setEmotionTone] = useState<string | null>(null);
   const [revealedCount, setRevealedCount] = useState(0);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [copied, setCopied] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const router = useRouter();
 
@@ -125,7 +128,22 @@ export default function PeekPage() {
 
   async function handleRetry() {
     setRevealedCount(0);
+    setShareUrl(null);
     await startStoryStream();
+  }
+
+  function handleShare() {
+    const payload = JSON.stringify({
+      story: storyText,
+      partner: isGhost ? "索拉里斯" : "另一个梦者",
+    });
+    const encoded = btoa(encodeURIComponent(payload));
+    const url = `${window.location.origin}/share?s=${encoded}`;
+    setShareUrl(url);
+    navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }).catch(() => {});
   }
 
   return (
@@ -256,12 +274,42 @@ export default function PeekPage() {
               </div>
             )}
 
-            {/* 故事完成后的揭示文字 */}
+            {/* 故事完成后的揭示文字 + 复制按钮 */}
             {storyStatus === "done" && storyText && (
-              <div className="mt-4 text-center animate-fade-in">
+              <div className="mt-4 flex flex-col items-center gap-3 animate-fade-in">
                 <p className="text-xs italic" style={{ color: "#a78bfa" }}>
                   你的梦遇见了{isGhost ? "索拉里斯" : "另一个梦者"}的梦
                 </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(storyText);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      } catch { /* ignore */ }
+                    }}
+                    className="rounded-2xl px-4 py-1.5 text-[11px] transition-all"
+                    style={{
+                      background: copied ? "rgba(168,85,247,0.2)" : "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(168,85,247,0.2)",
+                      color: copied ? "#c4b5fd" : "#9a80c0",
+                    }}
+                  >
+                    {copied ? "✓ 已复制" : "复制故事"}
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="rounded-2xl px-4 py-1.5 text-[11px] transition-all"
+                    style={{
+                      background: shareCopied ? "rgba(168,85,247,0.2)" : "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(168,85,247,0.2)",
+                      color: shareCopied ? "#c4b5fd" : "#9a80c0",
+                    }}
+                  >
+                    {shareCopied ? "✓ 链接已复制" : "🔗 分享链接"}
+                  </button>
+                </div>
               </div>
             )}
 
