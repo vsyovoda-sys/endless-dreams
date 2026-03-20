@@ -62,6 +62,7 @@ model AgentConversation {
   emotionTone     String?                   // 混合后的情感基调
   status          String   @default("pending") // pending/in_progress/completed/failed
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   completedAt     DateTime?
 
   agentA          User     @relation("AgentA", fields: [agentAUserId], references: [id])
