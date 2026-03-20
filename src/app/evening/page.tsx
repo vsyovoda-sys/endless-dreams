@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { PixelCat } from "@/components/PixelCat";
+
+const SYNTH_PHRASES = [
+  "正在召唤梦境碎片…",
+  "陌生人的梦正在漂来…",
+  "梦与梦之间的边界在融化…",
+  "正在将碎片编织成故事…",
+  "最后的缝合正在发生…",
+];
 
 interface Segment {
   id: string;
@@ -43,6 +51,9 @@ export default function EveningPage() {
   const [revealing, setRevealing] = useState(false);
   const [dreamHistory, setDreamHistory] = useState<Array<{ id: string; contentShort: string; date: string }>>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [synthStep, setSynthStep] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const synthTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
 
   const fetchEvening = useCallback(() => {
@@ -78,16 +89,24 @@ export default function EveningPage() {
 
   async function handleSynthesize() {
     setSynthesizing(true);
+    setSynthStep(0);
+    // 每2.5秒轮换一条进度文案
+    synthTimerRef.current = setInterval(() => {
+      setSynthStep((prev) => (prev + 1) % SYNTH_PHRASES.length);
+    }, 2500);
     try {
       const res = await fetch("/api/evening", { method: "POST" });
       if (res.ok) {
-        // 重新加载
         fetchEvening();
       } else {
         const data = await res.json();
         alert(data.message || "合成失败");
       }
     } finally {
+      if (synthTimerRef.current) {
+        clearInterval(synthTimerRef.current);
+        synthTimerRef.current = null;
+      }
       setSynthesizing(false);
     }
   }
@@ -181,18 +200,48 @@ export default function EveningPage() {
           </div>
 
         ) : !evening ? (
-          <div className="text-center py-12 space-y-6 animate-fade-in flex flex-col items-center">
-            <div className="animate-cat-idle" style={{ filter: "drop-shadow(0 0 10px rgba(255,215,0,0.25))" }}>
-              <PixelCat size={80} sleeping />
+          <div className="text-center py-8 space-y-5 animate-fade-in flex flex-col items-center">
+            {/* 虚化的梦境预览卡 –– 暗示"这里将会出现一个故事" */}
+            <div
+              className="w-full rounded-2xl p-5 relative overflow-hidden"
+              style={{
+                background: "rgba(30,5,60,0.55)",
+                border: "1px solid rgba(255,215,0,0.12)",
+                backdropFilter: "blur(14px)",
+              }}
+            >
+              {/* 模糊占位线条 */}
+              {[0.55, 0.4, 0.5, 0.35, 0.45].map((op, i) => (
+                <div
+                  key={i}
+                  className="h-3 rounded-full mb-3"
+                  style={{
+                    width: `${62 + (i % 3) * 12}%`,
+                    background: `rgba(232,213,160,${op * 0.25})`,
+                    margin: "0 auto 10px auto",
+                  }}
+                />
+              ))}
+              {/* 朦胧猫在中央 */}
+              <div
+                className="flex justify-center mt-2"
+                style={{ filter: "drop-shadow(0 0 16px rgba(255,215,0,0.35)) opacity(0.7)" }}
+              >
+                <PixelCat size={48} sleeping />
+              </div>
+              <p className="text-xs text-center mt-3" style={{ color: "rgba(184,160,208,0.5)" }}>
+                今晚你的梦会变成什么样子？
+              </p>
             </div>
-            <p className="text-sm" style={{ color: "#c4b0e0" }}>今天的梦还没有归来。</p>
-            <p className="text-xs max-w-xs text-center" style={{ color: "#8a70b0" }}>
-              先去换梦，让两只猫交换彼此的碎片，再来召回变形后的梦境
+
+            <p className="text-sm" style={{ color: "#c4b0e0" }}>梦境尚未归来。</p>
+            <p className="text-xs max-w-xs" style={{ color: "#8a70b0" }}>
+              先去换梦，让猫带着碎片出发，再来这里召唤变形后的故事。
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => router.push("/peek")}
-                className="rounded-2xl px-6 py-2.5 text-sm text-white transition-all hover:scale-[1.03] active:scale-[0.97]"
+                className="rounded-2xl px-5 py-2.5 text-sm text-white transition-all hover:scale-[1.03] active:scale-[0.97]"
                 style={{
                   background: "linear-gradient(135deg, #7c3aed, #a855f7)",
                   boxShadow: "0 4px 18px rgba(168,85,247,0.35)",
@@ -203,19 +252,20 @@ export default function EveningPage() {
               <button
                 onClick={handleSynthesize}
                 disabled={synthesizing}
-                className="rounded-2xl px-6 py-2.5 text-sm font-medium text-white transition-all hover:scale-[1.03] active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-2xl px-5 py-2.5 text-sm font-medium text-white transition-all hover:scale-[1.03] active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
-                  background: synthesizing ? "rgba(255,215,0,0.3)" : "rgba(255,215,0,0.15)",
-                  border: "1px solid rgba(255,215,0,0.35)",
+                  background: "rgba(255,215,0,0.12)",
+                  border: "1.5px solid rgba(255,215,0,0.4)",
+                  boxShadow: synthesizing ? "none" : "0 0 18px rgba(255,215,0,0.15)",
                 }}
               >
                 {synthesizing ? (
                   <span className="flex items-center gap-2">
-                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    梦正在凝聚…
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-amber-300 border-t-transparent" />
+                    {SYNTH_PHRASES[synthStep]}
                   </span>
                 ) : (
-                  "召回今日之梦"
+                  "✨ 召回今日之梦"
                 )}
               </button>
             </div>
@@ -230,12 +280,56 @@ export default function EveningPage() {
                 boxShadow: "0 4px 24px rgba(75,0,130,0.25), inset 0 1px 0 rgba(255,215,0,0.08)",
               }}
             >
+              {/* 头部：已有几个片段 */}
+              {evening.segments.length > 0 && (
+                <p className="text-xs mb-3" style={{ color: "rgba(255,215,0,0.5)" }}>
+                  ✦ 由 {evening.segments.length} 个梦境碎片编织而成
+                </p>
+              )}
               <p
                 className="leading-[2] whitespace-pre-wrap text-sm italic"
                 style={{ color: "#e8d5a0", fontFamily: "Georgia, 'Noto Serif SC', serif" }}
               >
                 {evening.story}
               </p>
+              {/* 故事操作按钮 */}
+              <div className="flex items-center gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,215,0,0.1)" }}>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(evening.story).then(() => {
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    });
+                  }}
+                  className="flex-1 rounded-xl py-2 text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{
+                    background: copied ? "rgba(255,215,0,0.18)" : "rgba(255,215,0,0.08)",
+                    border: "1px solid rgba(255,215,0,0.25)",
+                    color: "#e8d5a0",
+                  }}
+                >
+                  {copied ? "已复制 ✓" : "复制故事"}
+                </button>
+                <button
+                  onClick={handleSynthesize}
+                  disabled={synthesizing}
+                  className="flex-1 rounded-xl py-2 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: "rgba(168,85,247,0.1)",
+                    border: "1px solid rgba(168,85,247,0.25)",
+                    color: "#d8b4fe",
+                  }}
+                >
+                  {synthesizing ? (
+                    <span className="flex items-center justify-center gap-1.5">
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border border-purple-400 border-t-transparent" />
+                      {SYNTH_PHRASES[synthStep]}
+                    </span>
+                  ) : (
+                    "重新召唤"
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* 语音播放 */}

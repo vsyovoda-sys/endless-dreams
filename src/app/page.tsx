@@ -140,6 +140,57 @@ export default async function Home({
         style={{ color: "#b08ac0" }}>
         这里有一些无人认领的梦，它们在等一个听众。
       </footer>
+
+      {/* 漂流的梦碎片预览 */}
+      <section className="relative z-10 w-full max-w-sm px-4 pb-12 animate-fade-in delay-1000">
+        <p className="text-center text-[10px] tracking-widest uppercase mb-4" style={{ color: "#c4a8d8" }}>
+          — 索拉里斯留下的梦 —
+        </p>
+        <div className="space-y-3">
+          {/* 诗意 */}
+          <div
+            className="rounded-2xl px-4 py-3"
+            style={{
+              background: "rgba(124,58,237,0.06)",
+              border: "1px solid rgba(168,85,247,0.18)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="text-[10px] font-medium" style={{ color: "#c084fc" }}>🌙 诗意</span>
+            <p className="mt-1 text-xs leading-relaxed italic line-clamp-2" style={{ color: "#9966b8" }}>
+              梦见在奶奶家，很晚了，和同学一起临时抱佛脚，不停背书。楼上亮，楼下黑……周围嘈杂狂响，全是鬼声。
+            </p>
+          </div>
+          {/* 荒诞 */}
+          <div
+            className="rounded-2xl px-4 py-3"
+            style={{
+              background: "rgba(20,184,166,0.05)",
+              border: "1px solid rgba(20,184,166,0.15)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="text-[10px] font-medium" style={{ color: "#5eead4" }}>🌀 荒诞</span>
+            <p className="mt-1 text-xs leading-relaxed italic line-clamp-2" style={{ color: "#9966b8" }}>
+              列车从树梢越过田野，她抖落烟灰燃尽了灌木。草地暗处，司芬克斯和辛巴欢快交颈……
+            </p>
+          </div>
+          {/* 温柔 */}
+          <div
+            className="rounded-2xl px-4 py-3"
+            style={{
+              background: "rgba(236,72,153,0.05)",
+              border: "1px solid rgba(236,72,153,0.15)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="text-[10px] font-medium" style={{ color: "#f472b6" }}>🌸 温柔</span>
+            <p className="mt-1 text-xs leading-relaxed italic line-clamp-2" style={{ color: "#9966b8" }}>
+              我碰见了四扇关紧的门，它们之间有没有因缘逻辑，我不确定。总之我绕了一个圈，爱丽丝的兔子洞……
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
