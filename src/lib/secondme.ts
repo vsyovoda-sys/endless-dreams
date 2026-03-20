@@ -251,7 +251,7 @@ export async function ingestDreamMemory(
       channel: { kind: "thread" },
       action: "dream_recorded",
       actionLabel: "记录了一个梦境",
-      displayText: "用户在无尽之梦中记录了一段梦境",
+      displayText: "用户在破梦 DreamBreak 中记录了一段梦境",
       refs: [
         {
           objectType: "dream",

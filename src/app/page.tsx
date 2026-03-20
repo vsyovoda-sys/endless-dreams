@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { PixelCat } from "@/components/PixelCat";
-import { prisma } from "@/lib/prisma";
 
 /* 静态星星位置，避免服务端/客户端 hydration 不匹配 */
 const STARS = [
@@ -16,7 +15,6 @@ export default async function Home({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const dreamCount = await prisma.dream.count().catch(() => 0);
   const { error } = await searchParams;
   const errorMsg =
     error === "invalid_state" ? "登录验证失败，请重试"
@@ -68,12 +66,12 @@ export default async function Home({
             filter: "drop-shadow(0 2px 12px rgba(168,85,247,0.25))",
           }}
         >
-          无尽之梦
+          破梦
         </h1>
 
         <p className="mt-3 text-[11px] tracking-[0.4em] uppercase animate-fade-in delay-200"
           style={{ color: "#b08ac0" }}>
-          Endless Dreams
+          DreamBreak
         </p>
 
         {/* 猫咪入场 */}
@@ -128,7 +126,7 @@ export default async function Home({
 
       <footer className="relative z-10 mt-16 pb-safe pb-6 text-xs animate-fade-in delay-1000"
         style={{ color: "#b08ac0" }}>
-        {dreamCount > 0 ? `${dreamCount} 段无人认领的梦，正在等待听众` : "无数段梦，正在等待听众"}
+        无数段梦，正在等待听众
       </footer>
     </main>
   );

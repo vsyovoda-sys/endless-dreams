@@ -9,12 +9,12 @@ const notoSerif = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: "无尽之梦 — Endless Dreams",
+  title: "破梦 DreamBreak",
   description: "梦境在此相遇、渗透、变形。一种通过无意识连接人的方式。",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "无尽之梦",
+    title: "破梦",
   },
 };
 
