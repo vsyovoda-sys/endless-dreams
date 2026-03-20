@@ -23,7 +23,7 @@ export default async function Home({
     : null;
   return (
     <main
-      className="flex-1 flex flex-col items-center justify-center overflow-hidden"
+      className="flex-1 flex flex-col items-center overflow-x-hidden"
       style={{ background: "linear-gradient(160deg, #FFF8F8 0%, #FFE8E8 35%, #F5EEFF 70%, #EEF4FF 100%)" }}
     >
 
@@ -53,8 +53,8 @@ export default async function Home({
         ))}
       </div>
 
-      {/* ── 主内容 ── */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6">
+      {/* ── 主内容：最小全屏高度，垂直居中 ── */}
+      <div className="relative z-10 min-h-[100dvh] w-full flex flex-col items-center justify-center text-center px-6">
 
         {/* 标题 */}
         <h1
@@ -136,10 +136,15 @@ export default async function Home({
         </div>
       </div>
 
-      <footer className="relative z-10 mt-16 pb-safe pb-6 text-xs animate-fade-in delay-1000"
+      <footer className="relative z-10 pt-4 pb-3 text-xs animate-fade-in delay-1000"
         style={{ color: "#b08ac0" }}>
         这里有一些无人认领的梦，它们在等一个听众。
       </footer>
+
+      {/* 向下滑动提示箭头 */}
+      <div className="relative z-10 pb-3 animate-bounce" style={{ color: "rgba(160,130,200,0.45)", fontSize: 18 }}>
+        ↓
+      </div>
 
       {/* 漂流的梦碎片预览 */}
       <section className="relative z-10 w-full max-w-sm px-4 pb-12 animate-fade-in delay-1000">

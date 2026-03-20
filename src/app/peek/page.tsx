@@ -201,7 +201,7 @@ export default function PeekPage() {
               {storyStatus === "streaming" ? (
                 <span className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#a855f7" }} />
-                  正在编织…
+                  正在编织… {storyText.length > 0 && <span style={{ color: "#6a5a90" }}>({storyText.length}字)</span>}
                 </span>
               ) : storyStatus === "done" ? "故事已完成" : storyStatus === "error" ? "连接失败" : ""}
             </span>
