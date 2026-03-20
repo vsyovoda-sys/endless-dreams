@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 export async function GET(request: NextRequest) {
   const state = crypto.randomBytes(16).toString("hex");
-  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`;
+  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/callback`;
   const url = getOAuthURL(redirectUri, state);
 
   const response = NextResponse.redirect(url);
