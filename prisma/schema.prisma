@@ -80,6 +80,7 @@ model EveningDream {
   audioUrl  String?                         // TTS 生成的音频 URL
   date      DateTime  @default(now())       // 哪天的夜间梦境
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user      User      @relation(fields: [userId], references: [id])
   segments  Segment[]
@@ -96,6 +97,7 @@ model Segment {
   originUserId    String?                   // 来自谁
   isAnonymous     Boolean @default(false)   // 原梦主人是否匿名
   position        Int     @default(0)       // 片段在故事中的位置
+  updatedAt       DateTime @updatedAt
 
   eveningDream    EveningDream @relation(fields: [eveningDreamId], references: [id])
   originDream     Dream?       @relation(fields: [originDreamId], references: [id])
