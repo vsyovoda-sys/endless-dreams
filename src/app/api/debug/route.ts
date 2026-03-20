@@ -4,26 +4,22 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const url = process.env.TURSO_DATABASE_URL ?? "";
   try {
     const count = await prisma.dream.count();
     return NextResponse.json({
       ok: true,
       count,
-      env: {
-        TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ? "set" : "missing",
-        TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ? "set" : "missing",
-        DATABASE_URL: process.env.DATABASE_URL ? "set" : "missing",
-      },
+      urlPrefix: url.slice(0, 30),
+      urlLength: url.length,
     });
   } catch (e: unknown) {
     return NextResponse.json({
       ok: false,
       error: String(e),
-      env: {
-        TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ? "set" : "missing",
-        TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ? "set" : "missing",
-        DATABASE_URL: process.env.DATABASE_URL ? "set" : "missing",
-      },
+      urlPrefix: url.slice(0, 30),
+      urlLength: url.length,
+      hasNewline: url.includes("\n"),
     });
   }
 }
