@@ -72,6 +72,6 @@ export async function POST() {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Evening dream synthesis error:", error);
-    return NextResponse.json({ error: "梦境合成失败" }, { status: 500 });
+    return NextResponse.json({ error: "梦境合成失败", detail: String(error) }, { status: 500 });
   }
 }

@@ -343,9 +343,9 @@ export async function synthesizeEveningDream(userId: string): Promise<string | n
 
   if (conversations.length === 0) return null;
 
-  // 收集所有梦境混合结果
+  // 收集所有梦境混合结果（优先 dreamMixResult，fallback 到 fullContent 或 fragments）
   const mixedDreams = conversations
-    .map((c) => c.dreamMixResult)
+    .map((c) => c.dreamMixResult || c.fullContent || JSON.parse(c.fragments || '[]').join('、'))
     .filter(Boolean)
     .join("\n\n---\n\n");
 
