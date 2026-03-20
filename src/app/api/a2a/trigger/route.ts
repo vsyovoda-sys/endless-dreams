@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/app/api/auth/session/route";
 import { triggerA2AConversation } from "@/lib/a2a-engine";
 
+export const maxDuration = 60;
+
 /** POST /api/a2a/trigger — 手动触发一次 A2A 对话 */
 export async function POST() {
   const user = await getSessionUser();

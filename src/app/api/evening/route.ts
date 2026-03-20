@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/app/api/auth/session/route";
 import { triggerEveningDream } from "@/lib/a2a-engine";
 
+export const maxDuration = 60;
+
 /** GET /api/evening — 获取今日入梦 */
 export async function GET() {
   const user = await getSessionUser();

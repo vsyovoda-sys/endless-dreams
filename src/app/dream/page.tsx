@@ -40,6 +40,9 @@ export default function DreamPage() {
       }
 
       setResult(data.dream);
+
+      // 客户端主动触发 A2A 对话（Vercel ServerLess 中后台任务会被终止）
+      fetch("/api/a2a/trigger", { method: "POST" }).catch(() => {});
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         alert("AI分身出发有点慢，请稍后重试");
