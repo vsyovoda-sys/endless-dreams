@@ -117,6 +117,18 @@ export default async function Home({
           >
             用 Second Me 登录
           </Link>
+          <Link
+            href="/api/auth/guest"
+            className="relative inline-flex items-center justify-center rounded-2xl px-8 py-3 text-sm font-medium transition-all hover:scale-[1.03] active:scale-[0.97]"
+            style={{
+              color: "#7c3aed",
+              border: "1.5px solid rgba(168,85,247,0.35)",
+              background: "rgba(255,255,255,0.6)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            体验模式（无需登录）
+          </Link>
           <p className="text-xs" style={{ color: "#b08ac0" }}>你的 AI 分身将成为梦的使者</p>
           {errorMsg && (
             <p className="text-xs mt-1" style={{ color: "#e05a8a" }}>{errorMsg}</p>

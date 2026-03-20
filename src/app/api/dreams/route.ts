@@ -60,10 +60,12 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // 异步将梦境写入 Agent 记忆（不阻塞响应）
-  ingestDreamMemory(user.accessToken, dream.id, contentShort).catch((err) =>
-    console.error("Agent memory ingest failed:", err)
-  );
+  // 异步将梦境写入 Agent 记忆（体验模式跳过，不阻塞响应）
+  if (user.accessToken) {
+    ingestDreamMemory(user.accessToken, dream.id, contentShort).catch((err) =>
+      console.error("Agent memory ingest failed:", err)
+    );
+  }
 
   // 异步触发第一轮 A2A 对话（不阻塞响应）
   triggerA2AConversation(user.id).catch((err) =>

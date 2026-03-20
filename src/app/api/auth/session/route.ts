@@ -12,6 +12,9 @@ export async function getSessionUser() {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return null;
 
+  // 访客用户（无 accessToken）跳过 token 刷新
+  if (!user.accessToken) return user;
+
   // Token 即将过期（5分钟内），自动刷新
   if (user.tokenExpiresAt.getTime() - Date.now() < 5 * 60 * 1000) {
     try {

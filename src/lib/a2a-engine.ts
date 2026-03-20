@@ -6,7 +6,7 @@
 
 import { prisma } from "./prisma";
 import { chatWithAgent, actWithAgent, generateTTS } from "./secondme";
-import { ghostReply, transformDream } from "./gemini";
+import { ghostReply, transformDream, geminiGenerate } from "./gemini";
 
 // ─── 类型定义 ─────────────────────────────────────
 
@@ -209,7 +209,17 @@ export async function runConversation(pair: PairResult): Promise<string> {
     const fragmentForB = round === 1 ? pair.dreamA : lastAgentAReply;
 
     // ── 同一轮内 A 和 B 并行发起请求（最大化性能）──
-    if (pair.type === "user-user" && userB) {
+    const isGuest = !userA.accessToken; // 体验模式：无 Second Me token
+
+    if (isGuest) {
+      // 体验模式：双方都用 ghostReply（纯 LLM，不调 Second Me）
+      const [ghostA, ghostB] = await Promise.all([
+        ghostReply(pair.dreamA, fragmentForA),
+        ghostReply(pair.dreamB, fragmentForB),
+      ]);
+      lastAgentAReply = ghostA;
+      lastAgentBReply = ghostB;
+    } else if (pair.type === "user-user" && userB) {
       // 真实用户双 Agent 并行
       const [agentAResponse, agentBResponse] = await Promise.all([
         chatWithAgent({
@@ -269,11 +279,15 @@ export async function extractFragments(
   });
   if (!conversation) throw new Error(`Conversation not found: ${conversationId}`);
 
-  const rawResult = await actWithAgent({
-    accessToken,
-    message: conversation.fullContent,
-    actionControl: FRAGMENT_EXTRACTION_CONTROL,
-  });
+  // 体验模式用 LLM 代替 Second Me actWithAgent
+  const isGuest = !accessToken;
+  const rawResult = isGuest
+    ? await geminiGenerate(conversation.fullContent, FRAGMENT_EXTRACTION_CONTROL)
+    : await actWithAgent({
+        accessToken,
+        message: conversation.fullContent,
+        actionControl: FRAGMENT_EXTRACTION_CONTROL,
+      });
 
   // 解析 JSON（容错处理）
   let parsed: ExtractedFragments;
@@ -487,7 +501,10 @@ export async function triggerEveningDream(userId: string): Promise<{
     });
     if (!user) return null;
 
-    const audioUrl = await generateEveningAudio(eveningDreamId, user.accessToken);
+    // 体验模式跳过 TTS（需要 Second Me token）
+    const audioUrl = user.accessToken
+      ? await generateEveningAudio(eveningDreamId, user.accessToken)
+      : null;
 
     const eveningDream = await prisma.eveningDream.findUnique({
       where: { id: eveningDreamId },
